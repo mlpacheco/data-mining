@@ -132,7 +132,7 @@ def main():
 
     # Create bias nodes
     bias_tr = np.ones((X_train.shape[0], 1))
-    bias_tst = np.ones((X_test.hape[0], 1))
+    bias_tst = np.ones((X_test.shape[0], 1))
     # Add bias nodes to input
     X_train = np.hstack((X_train, bias_tr))
     X_test = np.hstack((X_test, bias_tst))
