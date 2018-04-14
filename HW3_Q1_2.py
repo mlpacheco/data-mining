@@ -20,7 +20,8 @@ def init_weights(n_feature, n_class, n_hidden=100):
 # Defines the softmax function.
 #For two classes, this is equivalent to the logistic regression
 def softmax(x):
-    return np.exp(x) / np.exp(x).sum()
+    a = max(x)
+    return np.exp(x-a) / np.exp(x-a).sum()
 
 # For a single example $x$
 def forward(x, model):
