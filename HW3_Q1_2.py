@@ -7,15 +7,18 @@ import numpy as np
 def init_weights(n_feature, n_class, n_hidden=100):
     # Initialize weights with Standard Normal random variables
     model = dict(
-        W1=np.random.randn(n_feature + 1, n_hidden), # Add 1 for bias node, will be connected to each hidden unit
-                                                     # this is equivalent to adding a bias per neuron
-        W2=np.random.randn(n_hidden, n_hidden), # Add one extra fully connected hidden layer
+        # Add 1 for bias node, will be connected to each hidden unit
+        # this is equivalent to adding a bias per neuron
+        W1=np.random.randn(n_feature + 1, n_hidden),
+        # Add one extra fully connected hidden layer
+        W2=np.random.randn(n_hidden, n_hidden),
         W3=np.random.randn(n_hidden, n_class)
     )
 
     return model
 
-# Defines the softmax function. For two classes, this is equivalent to the logistic regression
+# Defines the softmax function.
+#For two classes, this is equivalent to the logistic regression
 def softmax(x):
     return np.exp(x) / np.exp(x).sum()
 
@@ -41,7 +44,9 @@ def forward(x, model):
     return h_1, h_2, hat_y
 
 def backward(model, xs, hs1, hs2, errs):
-    """xs, hs, errs contain all information (input, hidden state 1, hidden state 2, error) of all data in the minibatch""" 
+    """xs, hs1, hs2, errs contain all information 
+    (input, hidden state 1, hidden state 2, error)
+    of all data in the minibatch""" 
     # errs is the gradient of output layer for the minibatch
     dW3 = (hs2.T @ errs)/xs.shape[0]
 
@@ -82,16 +87,16 @@ def get_gradient(model, X_train, y_train, n_class):
         errs.append(err)
 
     # Backprop using the informations we get from the current minibatch
-    return backward(model, np.array(xs), np.array(hs1), np.array(hs2), np.array(errs))
+    return backward(model, np.array(xs), np.array(hs1),
+                    np.array(hs2), np.array(errs))
 
 def gradient_step(model, X_train, y_train, n_class, learning_rate = 1e-1):
     grad = get_gradient(model, X_train, y_train, n_class)
     model = model.copy()
 
-    # Update every parameters in our networks (W1 and W2) using their gradients
+    # Update every parameters in our networks 
+    #(W1, W2 and W3) using their gradients
     for layer in grad:
-        if grad[layer] is None:
-            continue
         # Careful, learning rate should depend on mini-batch size
         model[layer] += learning_rate * grad[layer]
 
@@ -115,16 +120,20 @@ def gradient_descent(model, X_train, y_train, n_class, no_iter=10):
             X_train_mini = X_train[i:i + minibatch_size]
             y_train_mini = y_train[i:i + minibatch_size]
 
-            model = gradient_step(model, X_train_mini, y_train_mini, n_class, learning_rate = 1e-1)
+            model = gradient_step(model, X_train_mini, y_train_mini,
+                                  n_class, learning_rate = 1e-1)
 
     return model
 
 def main():
     X, y = make_moons(n_samples=5000, random_state=42, noise=0.1)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42,test_size=0.3)
+    X_train, X_test, y_train, y_test = \
+            train_test_split(X, y, random_state=42,test_size=0.3)
 
-    # Add bias nodes
-    bias_tr = np.ones((X_train.shape[0], 1)); bias_tst = np.ones((X_test.shape[0], 1))
+    # Create bias nodes
+    bias_tr = np.ones((X_train.shape[0], 1))
+    bias_tst = np.ones((X_test.hape[0], 1))
+    # Add bias nodes to input
     X_train = np.hstack((X_train, bias_tr))
     X_test = np.hstack((X_test, bias_tst))
 
@@ -134,38 +143,31 @@ def main():
     n_class = 2
 
     no_iter = 10
-    no_runs = 10
 
-    accuracies = np.zeros(no_runs)
-    for run in range(no_runs):
-        print("Run {}".format(run))
+    # Reset model
+    model = init_weights(n_feature=n_feature, n_class=n_class)
 
-        # Reset model
-        model = init_weights(n_feature=n_feature, n_class=n_class)
+    # Train the model
+    model = gradient_descent(model, X_train, y_train,
+                             n_class, no_iter=no_iter)
 
-        # Train the model
-        model = gradient_descent(model, X_train, y_train, n_class, no_iter=no_iter)
+    y_pred = np.zeros_like(y_test)
 
-        y_pred = np.zeros_like(y_test)
+    accuracy = 0
 
-        accuracy = 0
+    for i, x in enumerate(X_test):
+        # Predict the distribution of label
+        _, _, prob = forward(x, model)
+        # Get label by picking the most probable one
+        y = np.argmax(prob)
+        y_pred[i] = y
 
-        for i, x in enumerate(X_test):
-            # Predict the distribution of label
-            _, _, prob = forward(x, model)
-            # Get label by picking the most probable one
-            y = np.argmax(prob)
-            y_pred[i] = y
-
-        # Accuracy of predictions with the true labels and take the percentage
-        # Because our dataset is balanced, measuring just the accuracy is OK
-        accuracies[run] = (y_pred == y_test).sum() / y_test.size
-        print('Accuracy after {} iterations: {}'.format(no_iter,accuracies[run]))
-        #pylab.scatter(X_test[:,0], X_test[:,1], c=y_pred)
-        #pylab.show()
-
-
-    print('Mean accuracy over test data: {}, std: {}'.format(accuracies.mean(), accuracies.std()))
+    # Accuracy of predictions with the true labels and take the percentage
+    # Because our dataset is balanced, measuring just the accuracy is OK
+    accuracy = (y_pred == y_test).sum() / y_test.size
+    print('Accuracy after {} iterations: {}'.format(no_iter,accuracy))
+    #pylab.scatter(X_test[:,0], X_test[:,1], c=y_pred)
+    #pylab.show()
 
 
 if __name__ == '__main__':
