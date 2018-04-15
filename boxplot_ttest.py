@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('agg')
 import matplotlib.pyplot as plt
+from scipy import stats
 
 accs_curr = \
     [0.99193548, 1.0, 1.0, 1.0, 1.0,
@@ -18,6 +19,9 @@ accs_prev = \
 
 accs_curr = np.array(accs_curr)
 accs_prev = np.array(accs_prev)
+
+t_test, p_value = stats.ttest_rel(accs_curr,accs_prev)
+print('t_test', t_test, 'p_value', p_value)
 
 print(np.mean(accs_curr), np.std(accs_curr))
 print(np.mean(accs_prev), np.std(accs_prev))
