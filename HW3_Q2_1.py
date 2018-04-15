@@ -196,9 +196,9 @@ def main():
     # nn_test return 0/1 accuracy 
     # Please read pytorch documentation if you need more details on implementing nn using pytorch
     # training and test data is read as numpy arrays
-    train_x, train_y = read_train_data("data/train.csv")
-    test_x = read_test_data_x("data/test.csv")
-    test_y = read_test_data_y("data/pred.csv")
+    train_x, train_y = read_train_data("train.csv")
+    test_x = read_test_data_x("test.csv")
+    test_y = read_test_data_y("pred.csv")
 
   # You can use python pandas if you want to fasten reading file , the code is commented
   #  df = pd.read_csv("train.csv")
