@@ -1,0 +1,5 @@
+*.csv
+.DS[sv
+*.zip
+*.png
+.DS_Store
