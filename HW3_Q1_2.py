@@ -129,7 +129,7 @@ def gradient_descent(model, X_train, y_train, n_class, no_iter=10):
 def main():
     X, y = make_moons(n_samples=5000, random_state=42, noise=0.1)
     X_train, X_test, y_train, y_test = \
-            train_test_split(X, y, random_state=42,test_size=0.3)
+            train_test_split(X, y, random_state=42,test_size=0.4)
 
     # Create bias nodes
     bias_tr = np.ones((X_train.shape[0], 1))
@@ -144,7 +144,12 @@ def main():
     n_class = 2
 
     no_iter = 10
+    no_runs = 10
 
+    accuracies = np.zeros(no_runs)
+
+    #for run in range(no_runs):
+    accuracy = 0
     # Reset model
     model = init_weights(n_feature=n_feature, n_class=n_class)
 
@@ -153,9 +158,6 @@ def main():
                              n_class, no_iter=no_iter)
 
     y_pred = np.zeros_like(y_test)
-
-    accuracy = 0
-
     for i, x in enumerate(X_test):
         # Predict the distribution of label
         _, _, prob = forward(x, model)
@@ -170,6 +172,10 @@ def main():
     #pylab.scatter(X_test[:,0], X_test[:,1], c=y_pred)
     #pylab.show()
 
+
+    #accuracies[run] = accuracy
+
+    #print('Mean accuracy over test data: {}, std: {}'.format(accuracies.mean(), accuracies.std()))
 
 if __name__ == '__main__':
     main()
